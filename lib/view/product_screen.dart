@@ -22,6 +22,31 @@ class ProductScreen extends StatefulWidget {
 
 class _ProductScreenState extends State<ProductScreen> {
   var isShowFavorite = false;
+  var _isproductload = true;
+
+  var _islaoding = false;
+  @override
+  void didChangeDependencies() async {
+    if (_isproductload) {
+      try {
+        setState(() {
+          _islaoding = true;
+        });
+
+        await Provider.of<Products>(context).fetchProductData();
+        setState(() {
+          _islaoding = false;
+        });
+      } catch (error) {
+        setState(() {
+          _islaoding = false;
+        });
+      }
+    }
+    _isproductload = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productObject = Provider.of<Products>(context);
@@ -64,9 +89,15 @@ class _ProductScreenState extends State<ProductScreen> {
         ],
       ),
       drawer: AppDrawer(),
-      body: SafeArea(
-        child: ProductGrid(isShowFavorite),
-      ),
+      body: _islaoding
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : productObject.items.length <= 0
+              ? Center(child: Text('No Item Is Available '))
+              : SafeArea(
+                  child: ProductGrid(isShowFavorite),
+                ),
     );
   }
 }

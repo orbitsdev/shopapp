@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CartItem {
   final String id;
@@ -24,11 +27,11 @@ class Cart with ChangeNotifier {
   //   return {...items};
   // }
 
-  void addItem(
+  Future<void> addItem(
     String productId,
     double price,
     String title,
-  ) {
+  ) async {
     if (_items.containsKey(productId)) {
       _items.update(
           productId,
@@ -37,15 +40,54 @@ class Cart with ChangeNotifier {
               title: existingcartItem.title,
               quantity: existingcartItem.quantity + 1,
               price: existingcartItem.price));
+
+      final cartid = _items[productId]!.id;
+      final oldquantityvalue = _items[productId]!.quantity;
+
+      try {
+        final url = Uri.parse(
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+        final response = await http.patch(url,
+            body: json.encode({
+              'quantity': oldquantityvalue + 1,
+            }));
+      } catch (error) {
+        throw (error);
+      }
     } else {
-      _items.putIfAbsent(
-          productId,
-          () => CartItem(
-              id: DateTime.now().toString(),
-              title: title,
-              quantity: 1,
-              price: price));
+      final url = Uri.parse(
+          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json');
+      var thetime = DateTime.now().toString();
+      try {
+        final response = await http.post(url,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: json.encode({
+              'title': title,
+              'quantity': 1,
+              'price': price,
+            }));
+
+        var cartid = json.decode(response.body)["name"];
+        final carturl = Uri.parse(
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+
+        final fetchcart = await http.get(carturl);
+        final cart = json.decode(fetchcart.body);
+
+        _items.putIfAbsent(
+            productId,
+            () => CartItem(
+                id: cartid,
+                title: cart['title'],
+                quantity: cart['quantity'],
+                price: cart['price']));
+      } catch (error) {
+        throw (error);
+      }
     }
+
     notifyListeners();
   }
 
@@ -64,8 +106,19 @@ class Cart with ChangeNotifier {
     return total;
   }
 
-  void removeItem(String productId) {
-    _items.remove(productId);
+  Future<void> removeItem(String productId) async {
+    final cartid = _items[productId]!.id;
+    final oldquantityvalue = _items[productId]!.quantity;
+    try {
+      final url = Uri.parse(
+          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+
+      await http.delete(url);
+      _items.remove(productId);
+    } catch (error) {
+      throw error;
+    }
+
     notifyListeners();
   }
 
@@ -74,21 +127,24 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeSingleItem(String productId) {
+  Future<void> removeSingleItem(String productId) async {
     if (!_items.containsKey(productId)) {
       return;
     }
+    final cartid = _items[productId]!.id;
+    final oldquantityvalue = _items[productId]!.quantity;
 
     if (_items[productId]!.quantity > 1) {
-      _items.update(
-          productId,
-          (existcartitem) => CartItem(
-              id: existcartitem.id,
-              title: existcartitem.title,
-              quantity: existcartitem.quantity - 1,
-              price: existcartitem.price));
     } else {
-      _items.remove(productId);
+      try {
+        final url = Uri.parse(
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json');
+
+        final response = await http.get(url);
+        _items.remove(productId);
+      } catch (error) {
+        throw (error);
+      }
     }
     notifyListeners();
   }
