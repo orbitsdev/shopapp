@@ -20,6 +20,10 @@ class CartItem {
 class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {};
 
+  String? authToken;
+
+  Cart(this.authToken, this._items);
+
   Map<String, CartItem> get item {
     return {..._items};
   }
@@ -46,7 +50,7 @@ class Cart with ChangeNotifier {
 
       try {
         final url = Uri.parse(
-            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json?auth=$authToken');
         final response = await http.patch(url,
             body: json.encode({
               'quantity': oldquantityvalue + 1,
@@ -54,9 +58,11 @@ class Cart with ChangeNotifier {
       } catch (error) {
         throw (error);
       }
+
+      print('success');
     } else {
       final url = Uri.parse(
-          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json');
+          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json?auth=$authToken');
       var thetime = DateTime.now().toString();
       try {
         final response = await http.post(url,
@@ -71,7 +77,7 @@ class Cart with ChangeNotifier {
 
         var cartid = json.decode(response.body)["name"];
         final carturl = Uri.parse(
-            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json?auth=$authToken');
 
         final fetchcart = await http.get(carturl);
         final cart = json.decode(fetchcart.body);
@@ -111,7 +117,7 @@ class Cart with ChangeNotifier {
     final oldquantityvalue = _items[productId]!.quantity;
     try {
       final url = Uri.parse(
-          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json');
+          'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId/$cartid.json?auth=$authToken');
 
       await http.delete(url);
       _items.remove(productId);
@@ -138,7 +144,7 @@ class Cart with ChangeNotifier {
     } else {
       try {
         final url = Uri.parse(
-            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json');
+            'https://shop-27d83-default-rtdb.firebaseio.com/cart/$productId.json?auth=$authToken');
 
         final response = await http.get(url);
         _items.remove(productId);

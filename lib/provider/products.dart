@@ -8,8 +8,73 @@ class Products with ChangeNotifier {
   List<Product> _items = [];
 
   var showFavoriteOnly = false;
+
+  String? authtoken;
+  String? userId;
+
+  Products(this.authtoken, this.userId, this._items);
   List<Product> get items {
     return [..._items];
+  }
+
+  Future<void> fetchProductData() async {
+    var url = Uri.parse(
+        'https://shop-27d83-default-rtdb.firebaseio.com/product.json?auth=$authtoken&orderBy="creatorid"&equalTo="$userId"');
+
+    try {
+      final response = await http.get(url);
+      final extractData = json.decode(response.body) as Map<String, dynamic>;
+      if (extractData == null) {
+        return;
+      }
+      print(extractData);
+      List<Product> loadedProduct = [];
+
+      extractData.forEach((productid, productdata) {
+        loadedProduct.insert(
+            0,
+            Product(
+                id: productid,
+                title: productdata['title'],
+                description: productdata['description'],
+                imageUrl: productdata['imageUrl'],
+                price: productdata['price']));
+      });
+
+      _items = loadedProduct;
+      print('_____________');
+      notifyListeners();
+
+      // url = Uri.parse(
+      //     'https://shop-27d83-default-rtdb.firebaseio.com/userfavorite/$userId.json?auth=$authtoken');
+
+      // final favoriteresponse = await http.get(url);
+      // final favoriteData = json.decode(favoriteresponse.body);
+
+      // final List<Product> loadedProduct = [];
+      // extractData.forEach((prodId, productdata) {
+      //   loadedProduct.insert(
+      //       0,
+      //       Product(
+
+      //         id: prodId,
+      //         title: productdata['title'],
+      //         description: productdata['description'],
+      //         imageUrl: productdata['imageUrl'],
+      //         price: productdata['price'],
+      //         isFavorite: favoriteData[prodId] == null
+      //             ? false
+      //             : favoriteData[prodId] ?? false,
+      //       ));
+      // });
+
+      // _items = loadedProduct;
+      // notifyListeners();
+    } catch (error) {
+      print(error);
+
+      throw (error);
+    }
   }
 
   Product finById(String id) {
@@ -22,16 +87,16 @@ class Products with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final url = Uri.parse(
-        'https://shop-27d83-default-rtdb.firebaseio.com/product.json');
+        'https://shop-27d83-default-rtdb.firebaseio.com/product.json?auth=$authtoken');
 
     try {
       final response = await http.post(url,
           body: json.encode({
             'title': product.title,
+            'creatorid': userId,
             'description': product.description,
             'imageUrl': product.imageUrl,
             'price': product.price,
-            'isFavorite': product.isFavorite,
           }));
 
       final newproduct = Product(
@@ -54,7 +119,7 @@ class Products with ChangeNotifier {
 
     if (proIndex >= 0) {
       final url = Uri.parse(
-          'https://shop-27d83-default-rtdb.firebaseio.com/product/$id.json');
+          'https://shop-27d83-default-rtdb.firebaseio.com/product/$id.json?auth=$authtoken');
       await http.patch(url,
           body: json.encode({
             'description': newProduct.description,
@@ -78,7 +143,7 @@ class Products with ChangeNotifier {
     notifyListeners();
 
     final url = Uri.parse(
-        'https://shop-27d83-default-rtdb.firebaseio.com/product/$id.json');
+        'https://shop-27d83-default-rtdb.firebaseio.com/product/$id.json?auth=$authtoken');
 
     final response = await http.delete(url);
     if (response.statusCode >= 400) {
@@ -88,37 +153,5 @@ class Products with ChangeNotifier {
     }
 
     product = null;
-  }
-
-  Future<void> fetchProductData() async {
-    final url = Uri.parse(
-        'https://shop-27d83-default-rtdb.firebaseio.com/product.json');
-
-    try {
-      final response = await http.get(url);
-      final extractData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractData == null) {
-        return;
-      }
-      final List<Product> loadedProduct = [];
-      extractData.forEach((key, productdata) {
-        loadedProduct.insert(
-            0,
-            Product(
-                id: key,
-                title: productdata['title'],
-                description: productdata['description'],
-                imageUrl: productdata['imageUrl'],
-                price: productdata['price'],
-                isFavorite: productdata['isFavorite']));
-      });
-
-      _items = loadedProduct;
-      notifyListeners();
-    } catch (error) {
-      print(error);
-
-      throw (error);
-    }
   }
 }

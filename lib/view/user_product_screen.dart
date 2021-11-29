@@ -75,6 +75,7 @@ class _UserProductScreenState extends State<UserProductScreen> {
                             children: [
                               UserProductItem(
                                   productId: productsData.items[index].id,
+                                  userid:productsData.userId as String,
                                   title: productsData.items[index].title,
                                   imageUrl: productsData.items[index].imageUrl),
                               Divider(),

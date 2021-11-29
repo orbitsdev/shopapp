@@ -50,6 +50,8 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     final productObject = Provider.of<Products>(context);
+
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My shop'),

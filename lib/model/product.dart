@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Product with ChangeNotifier {
+  
   final String id;
   final String title;
   final String description;
@@ -19,22 +20,26 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  Future<void> toggleFavoriteStatus() async {
-    final oldfavoritedata = isFavorite;
-    isFavorite = !isFavorite;
-    notifyListeners();
+  Future<void> toggleFavoriteStatus(String token, String userid) async {
 
-    final url = Uri.parse(
-        'https://shop-27d83-default-rtdb.firebaseio.com/product/$id.json');
+    print(userid);
+    print(token);
+     final oldfavoritedata = isFavorite;
+     isFavorite = !isFavorite;
+     notifyListeners();
 
-    try {
-      await http.patch(url,
-          body: json.encode({
-            'isFavorite': isFavorite,
-          }));
-    } catch (error) {
-      isFavorite = oldfavoritedata;
-      notifyListeners();
-    }
+     final url = Uri.parse(
+         'https://shop-27d83-default-rtdb.firebaseio.com/userfavorite/$userid/$id.json?auth=$token');
+
+     try {
+       await http.put(url,
+           body: json.encode({
+             'isFavorite':isFavorite,
+           }));
+           print('he');
+     } catch (error) {
+       isFavorite = oldfavoritedata;
+       notifyListeners();
+     }
   }
 }

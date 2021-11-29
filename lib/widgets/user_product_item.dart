@@ -4,12 +4,15 @@ import 'package:shop/provider/products.dart';
 import 'package:shop/view/edit_product_screen.dart';
 
 class UserProductItem extends StatelessWidget {
+  
+  final String userid;
   final String productId;
   final String title;
   final String imageUrl;
   UserProductItem({
     Key? key,
     required this.productId,
+    required this.userid, 
     required this.title,
     required this.imageUrl,
   }) : super(key: key);
@@ -41,6 +44,7 @@ class UserProductItem extends StatelessWidget {
                   } catch (error) {
                     scaffold
                         .showSnackBar(SnackBar(content: Text('Delete Faild')));
+                        print(error);
                   }
                 },
                 icon: Icon(

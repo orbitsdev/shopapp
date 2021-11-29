@@ -17,8 +17,17 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageFocusNode = FocusNode();
   final _formkey = GlobalKey<FormState>();
 
+  String? token;
+  String? userId;
+
   var _editedProduct = Product(
-      id: 'null', title: 'B', description: 'C', imageUrl: 'D', price: 0);
+
+      id: 'null',
+    
+      title: 'B',
+      description: 'C',
+      imageUrl: 'D',
+      price: 0);
 
   var _isArgumentloaded = true;
 
@@ -172,6 +181,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
+                          
                           id: _editedProduct.id,
                           title: value as String,
                           description: _editedProduct.description,
@@ -210,6 +220,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
+                           
                             id: _editedProduct.id,
                             title: _editedProduct.title,
                             description: _editedProduct.description,
@@ -238,6 +249,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
+                           
                             id: _editedProduct.id,
                             title: _editedProduct.title,
                             description: value as String,
@@ -292,6 +304,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             },
                             onSaved: (value) {
                               _editedProduct = Product(
+                                 
                                   id: _editedProduct.id,
                                   title: _editedProduct.title,
                                   description: _editedProduct.description,
