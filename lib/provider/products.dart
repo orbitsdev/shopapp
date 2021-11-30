@@ -32,8 +32,6 @@ class Products with ChangeNotifier {
       List<Product> loadedProduct = [];
 
       extractData.forEach((productid, productdata) {
-
-      
         loadedProduct.insert(
             0,
             Product(
@@ -41,7 +39,7 @@ class Products with ChangeNotifier {
                 title: productdata['title'],
                 description: productdata['description'],
                 imageUrl: productdata['imageUrl'],
-                price: productdata['price'].toDouble() ));
+                price: productdata['price'].toDouble()));
       });
 
       _items = loadedProduct;
