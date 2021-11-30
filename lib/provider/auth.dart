@@ -61,10 +61,10 @@ class Auth extends ChangeNotifier {
       );
 
       _autoLogout();
-      print('___________________');
-      print(_token);
-      print(_expiryDate);
-      print(_userId);
+      // print('___________________');
+      // print(_token);
+      // print(_expiryDate);
+      // print(_userId);
 
       // print(responseData);
       notifyListeners();
@@ -80,7 +80,6 @@ class Auth extends ChangeNotifier {
       throw error;
     }
 
-    // print(json.decode(response.body));
   }
 
   Future<void> signup(String email, String password) async {

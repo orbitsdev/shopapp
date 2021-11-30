@@ -27,10 +27,13 @@ class Products with ChangeNotifier {
       if (extractData == null) {
         return;
       }
+      print('____________products');
       print(extractData);
       List<Product> loadedProduct = [];
 
       extractData.forEach((productid, productdata) {
+
+      
         loadedProduct.insert(
             0,
             Product(
@@ -38,37 +41,13 @@ class Products with ChangeNotifier {
                 title: productdata['title'],
                 description: productdata['description'],
                 imageUrl: productdata['imageUrl'],
-                price: productdata['price']));
+                price: productdata['price'].toDouble() ));
       });
 
       _items = loadedProduct;
-      print('_____________');
-      notifyListeners();
-
-      // url = Uri.parse(
-      //     'https://shop-27d83-default-rtdb.firebaseio.com/userfavorite/$userId.json?auth=$authtoken');
-
-      // final favoriteresponse = await http.get(url);
-      // final favoriteData = json.decode(favoriteresponse.body);
-
-      // final List<Product> loadedProduct = [];
-      // extractData.forEach((prodId, productdata) {
-      //   loadedProduct.insert(
-      //       0,
-      //       Product(
-
-      //         id: prodId,
-      //         title: productdata['title'],
-      //         description: productdata['description'],
-      //         imageUrl: productdata['imageUrl'],
-      //         price: productdata['price'],
-      //         isFavorite: favoriteData[prodId] == null
-      //             ? false
-      //             : favoriteData[prodId] ?? false,
-      //       ));
-      // });
-
-      // _items = loadedProduct;
+      // print('_____________');
+      // print(items.length);
+      // print('_____________');
       // notifyListeners();
     } catch (error) {
       print(error);

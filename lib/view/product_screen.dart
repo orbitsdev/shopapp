@@ -34,6 +34,7 @@ class _ProductScreenState extends State<ProductScreen> {
         });
 
         await Provider.of<Products>(context).fetchProductData();
+    
         setState(() {
           _islaoding = false;
         });
@@ -49,8 +50,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final productObject = Provider.of<Products>(context);
-
+    final productObject = Provider.of<Products>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -95,7 +95,7 @@ class _ProductScreenState extends State<ProductScreen> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : productObject.items.length <= 0
+          : (productObject.items.length <= 0)
               ? Center(child: Text('No Item Is Available '))
               : SafeArea(
                   child: ProductGrid(isShowFavorite),
