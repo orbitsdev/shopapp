@@ -17,7 +17,10 @@ class _OrderItemState extends State<OrderItem> {
   var _expanded = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AnimatedContainer(
+      height:
+          _expanded ? min(widget.order.products.length * 20.00 + 110, 220) : 95,
+      duration: Duration(milliseconds: 300),
       margin: EdgeInsets.all(10),
       child: Column(
         children: [
@@ -34,31 +37,33 @@ class _OrderItemState extends State<OrderItem> {
                 },
                 icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more)),
           ),
-          if (_expanded)
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
-              height: min(widget.order.products.length * 20.00 + 10, 100),
-              child: ListView(
-                children: [
-                  ...widget.order.products.map((pro) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          pro.title,
-                          style: TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          '${pro.quantity} x \$ ${pro.price}',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      ],
-                    );
-                  }).toList(),
-                ],
-              ),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+            height: _expanded
+                ? min(widget.order.products.length * 20.00 + 10, 100)
+                : 0,
+            child: ListView(
+              children: [
+                ...widget.order.products.map((pro) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        pro.title,
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${pro.quantity} x \$ ${pro.price}',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ],
             ),
+          ),
         ],
       ),
     );

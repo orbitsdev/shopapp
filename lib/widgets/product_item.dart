@@ -10,21 +10,26 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context);
     final cart = Provider.of<Cart>(context, listen: false);
-    final authData = Provider.of<Auth>(context, listen:  false);
+    final authData = Provider.of<Auth>(context, listen: false);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GestureDetector(
         child: GridTile(
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+              placeholder: AssetImage('assets/images/a.jpg'),
+              image: NetworkImage(product.imageUrl),
+              fit: BoxFit.cover,
+            ),
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black54,
             leading: IconButton(
                 onPressed: () {
-                  product.toggleFavoriteStatus(authData.token as String, authData.userId as String);
+                  product.toggleFavoriteStatus(
+                      authData.token as String, authData.userId as String);
                 },
                 icon: Icon(product.isFavorite
                     ? Icons.favorite
